@@ -1,0 +1,13 @@
+# TRINETRA - Core Dependencies
+Flask>=3.0.0
+flask-cors>=5.0.0
+python-dotenv>=1.0.0
+
+# Testing & Quality
+pytest>=8.0.0
+
+# Numerical, ML & Optimization (Phases 3-6)
+numpy>=1.26.0
+pandas>=2.2.0
+scipy>=1.13.0
+scikit-learn>=1.4.0

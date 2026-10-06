@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRINETRA — AI-Native Inventory Resilience Platform</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="brand-section">
+      <h1 class="brand-title">
+        <span>TRINETRA</span>
+        <span style="font-size: 0.65rem; background: var(--bg-panel-elevated); padding: 0.15rem 0.4rem; border: 1px solid var(--border-hairline); border-radius: var(--radius-xs); color: var(--accent-blue); font-weight: 600;">OPERATIONS OS</span>
+      </h1>
+      <span class="brand-tagline">SEE. FORESEE. PREPARE.</span>
+    </div>
+    <div class="topbar-actions">
+      <!-- Ctrl+K Command Palette Trigger -->
+      <div id="btn-open-palette" class="cmd-palette-trigger" title="Open Command Palette (Ctrl+K)">
+        <span>Search & Commands</span>
+        <kbd>Ctrl+K</kbd>
+      </div>
+      <div id="connection-badge" class="system-status-badge">
+        <span class="pulse-dot"></span>
+        <span id="system-status-text">CONNECTING...</span>
+      </div>
+      <span id="api-latency" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">-- ms</span>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <button class="nav-item active" data-view="command-center">Command Center</button>
+    <button class="nav-item" data-view="inventory">Inventory</button>
+    <button class="nav-item" data-view="replenishment">Replenishment & POs</button>
+    <button class="nav-item" data-view="audit-ledger">Audit Ledger</button>
+    <button class="nav-item" data-view="suppliers">Suppliers</button>
+    <button class="nav-item" data-view="intelligence">Intelligence</button>
+    <button class="nav-item" data-view="resilience-lab">Resilience Lab</button>
+    <button class="nav-item" data-view="supply-network">Supply Network</button>
+    <button class="nav-item" data-view="capital">Capital</button>
+    <button class="nav-item" data-view="decision-ledger">Decision Ledger</button>
+    <button class="nav-item" data-view="system-health">System Health</button>
+  </nav>
+
+  <!-- Main Content Stage -->
+  <main class="main-content">
+
+    <!-- 1. Live Operational Command Center View -->
+    <section id="view-command-center" class="view-section active">
+      <!-- Section A: System Status Telemetry Bank -->
+      <div class="pulse-grid">
+        <div class="card">
+          <div class="card-title">Monitored Catalogue <span style="color: var(--accent-blue);">SKUs</span></div>
+          <div id="pulse-skus" class="card-value">0</div>
+          <div class="card-hint">Total monitored active items</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Network Units On-Hand <span style="color: var(--accent-emerald);">QTY</span></div>
+          <div id="pulse-units" class="card-value">0</div>
+          <div class="card-hint">Aggregate physical inventory</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Committed Capital <span style="color: var(--accent-cyan);">INR</span></div>
+          <div id="pulse-capital" class="card-value">₹0.00</div>
+          <div class="card-hint">Total inventory book valuation</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Stockout Vulnerability <span style="color: var(--accent-amber);">CRIT</span></div>
+          <div id="pulse-alerts" class="card-value" style="color: var(--accent-amber);">0</div>
+          <div class="card-hint">Items at or below reorder threshold</div>
+        </div>
+      </div>
+
+      <!-- Section B: TRINETRA Operational Resilience Index (Composite Health) -->
+      <div class="card" style="margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <div style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;">
+              Supply Network Health Metric
+            </div>
+            <h2 style="font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-top: 0.15rem;">TRINETRA Resilience Index</h2>
+            <div style="font-size: 0.72rem; color: var(--text-secondary); font-family: var(--font-mono); margin-top: 0.25rem;">
+              0.25·DemandStability + 0.25·CoverageSafety + 0.20·SupplierDiversity + 0.15·LeadReliability + 0.15·CapitalFlexibility
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <div style="text-align: right;">
+              <span id="resilience-score-num" style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--accent-emerald);">--</span>
+              <span style="font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-mono);">/ 100</span>
+              <div><span id="resilience-rating-badge" class="badge badge-normal">CALCULATING...</span></div>
+            </div>
+            <button id="btn-seed-data" class="btn btn-primary" title="Seeds 7 distinct product personas with 90-day demand histories">
+              ⚡ Load Demo Scenarios
+            </button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.5rem; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--border-hairline);">
+          <div style="background: var(--bg-base); padding: 0.5rem 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle);">
+            <div class="card-title" style="margin-bottom: 0.15rem;">Demand Stability</div>
+            <div id="sub-demand-stability" class="num-cell" style="font-weight: 700; font-size: 1rem;">--</div>
+          </div>
+          <div style="background: var(--bg-base); padding: 0.5rem 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle);">
+            <div class="card-title" style="margin-bottom: 0.15rem;">Coverage Safety</div>
+            <div id="sub-coverage-safety" class="num-cell" style="font-weight: 700; font-size: 1rem;">--</div>
+          </div>
+          <div style="background: var(--bg-base); padding: 0.5rem 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle);">
+            <div class="card-title" style="margin-bottom: 0.15rem;">Supplier Diversity</div>
+            <div id="sub-supplier-diversification" class="num-cell" style="font-weight: 700; font-size: 1rem;">--</div>
+          </div>
+          <div style="background: var(--bg-base); padding: 0.5rem 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle);">
+            <div class="card-title" style="margin-bottom: 0.15rem;">Lead Reliability</div>
+            <div id="sub-lead-reliability" class="num-cell" style="font-weight: 700; font-size: 1rem;">--</div>
+          </div>
+          <div style="background: var(--bg-base); padding: 0.5rem 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle);">
+            <div class="card-title" style="margin-bottom: 0.15rem;">Capital Flexibility</div>
+            <div id="sub-capital-flexibility" class="num-cell" style="font-weight: 700; font-size: 1rem;">--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section C: Future Window Horizontal Timeline (NOW → 24H → 7D → 30D) -->
+      <div class="future-horizon-container">
+        <div class="future-horizon-header">
+          <div>
+            <div style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;">
+              Predictive Trajectory
+            </div>
+            <h2 style="font-size: 1rem; font-weight: 700; color: #ffffff;">Future Horizon Window</h2>
+          </div>
+          <div style="display: flex; gap: 0.35rem;">
+            <button class="btn btn-sm" id="btn-horizon-now">NOW</button>
+            <button class="btn btn-sm" id="btn-horizon-24h">24 HOURS</button>
+            <button class="btn btn-sm" id="btn-horizon-7d">7 DAYS</button>
+            <button class="btn btn-sm" id="btn-horizon-30d">30 DAYS</button>
+          </div>
+        </div>
+        <div class="horizon-track">
+          <!-- NOW Milestone -->
+          <div class="horizon-milestone">
+            <div class="horizon-milestone-tag">● T = 0 : REAL-TIME</div>
+            <div class="horizon-milestone-title">Ledger Synchronized</div>
+            <div class="horizon-milestone-desc" id="horizon-desc-now">
+              Continuous invariant audit healthy. Movement balance verification active.
+            </div>
+          </div>
+          <!-- 24H Milestone -->
+          <div class="horizon-milestone">
+            <div class="horizon-milestone-tag" style="color: var(--accent-amber);">● T + 24H : DISPATCH</div>
+            <div class="horizon-milestone-title">Pending PO Approvals</div>
+            <div class="horizon-milestone-desc" id="horizon-desc-24h">
+              Automated orders queued in Action Studio pending operator sign-off.
+            </div>
+          </div>
+          <!-- 7D Milestone -->
+          <div class="horizon-milestone">
+            <div class="horizon-milestone-tag" style="color: var(--accent-rose);">● T + 7D : CRITICAL BUFFER</div>
+            <div class="horizon-milestone-title">Stockout Threshold Warnings</div>
+            <div class="horizon-milestone-desc" id="horizon-desc-7d">
+              Identified SKUs approaching lead time exhaustion without inbound receipt.
+            </div>
+          </div>
+          <!-- 30D Milestone -->
+          <div class="horizon-milestone">
+            <div class="horizon-milestone-tag" style="color: var(--accent-purple);">● T + 30D : STRATEGIC</div>
+            <div class="horizon-milestone-title">Capital Rebalance Cycle</div>
+            <div class="horizon-milestone-desc" id="horizon-desc-30d">
+              Portfolio velocity recalibration and dead stock liquidation realization.
+            </div>
+          </div>
+        </div>
+        <p id="daily-briefing-text" style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-hairline); color: var(--text-secondary); font-size: 0.8rem; line-height: 1.5;">
+          System operational. Monitoring inventory health across active warehouses. The immutable stock movement ledger is active to record all purchases, sales, and adjustments.
+        </p>
+      </div>
+
+      <!-- Section D: Prioritized Attention Stream (Actual Issues Queue) -->
+      <div class="table-container" style="margin-bottom: 1.25rem;">
+        <div class="table-header-toolbar">
+          <div>
+            <h2 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-rose); margin: 0;">
+              ▲ Attention Stream: Prioritized Vulnerabilities
+            </h2>
+            <span style="font-size: 0.72rem; color: var(--text-muted);">
+              Ordered by severity → contributing evidence → predicted exposure → recommended action
+            </span>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>SKU / Monitored Product</th>
+              <th>Vulnerability Diagnosis</th>
+              <th>Severity</th>
+              <th style="text-align: right;">Coverage Window</th>
+              <th style="text-align: right;">Capital Exposure</th>
+              <th style="text-align: right;">Prescribed Action</th>
+            </tr>
+          </thead>
+          <tbody id="attention-queue-tbody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Evaluating operational attention queue...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. Inventory View -->
+    <section id="view-inventory" class="view-section">
+      <div class="table-container">
+        <div class="table-header-toolbar">
+          <div style="display: flex; gap: 0.75rem; align-items: center; flex: 1; flex-wrap: wrap;">
+            <input type="text" id="inventory-search" class="search-input" placeholder="Search SKU, Product Name, or Description (Ctrl+K)...">
+            <select id="category-filter" class="search-input" style="min-width: 140px;">
+              <option value="">All Categories</option>
+            </select>
+            <button id="btn-toggle-low-stock" class="btn btn-sm">Show Low Stock Only</button>
+          </div>
+          <div>
+            <button id="btn-add-product" class="btn btn-primary">+ Add New SKU</button>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th style="text-align: right;">Quantity</th>
+              <th style="text-align: right;">Unit Price</th>
+              <th style="text-align: right;">Total Value</th>
+              <th style="text-align: center;">Status</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-table-body">
+            <tr>
+              <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading inventory data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Replenishment & Purchase Orders View (Spec §17, §18, §19, §20) -->
+    <section id="view-replenishment" class="view-section">
+      <!-- Recommendations Container -->
+      <div class="table-container" style="margin-bottom: 1.5rem;">
+        <div class="table-header-toolbar">
+          <div>
+            <h2 style="font-size: 1rem; font-weight: 600;">📦 Automated Replenishment Recommendations</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">
+              Triggered when Inventory Position ≤ ROP. Optimized with EOQ, Safety Stock & Supplier MOQs.
+            </span>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <select id="replenish-service-level" class="search-input" style="width: 140px;">
+              <option value="0.95">95% Service Level</option>
+              <option value="0.90">90% Service Level</option>
+              <option value="0.99">99% Service Level</option>
+            </select>
+            <button id="btn-scan-replenish" class="btn btn-sm">Scan Catalogue</button>
+            <button id="btn-consolidate-pos" class="btn btn-sm btn-primary">⚡ Consolidate into POs</button>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 30px;"><input type="checkbox" id="chk-select-all-recs"></th>
+              <th>SKU & Product Name</th>
+              <th style="text-align: center;">Urgency</th>
+              <th style="text-align: right;">On-Hand</th>
+              <th style="text-align: right;">ROP (SS)</th>
+              <th style="text-align: right;">EOQ (MOQ)</th>
+              <th style="text-align: right;">Recommended Qty</th>
+              <th style="text-align: right;">Investment (₹)</th>
+              <th>Primary Supplier</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="replenishment-recs-tbody">
+            <tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading replenishment recommendations...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Purchase Orders Container -->
+      <div class="table-container">
+        <div class="table-header-toolbar">
+          <div>
+            <h2 style="font-size: 1rem; font-weight: 600;">📋 Purchase Order Lifecycle & Inbound Receiving</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">
+              Supplier purchase orders with approval workflow. Marking RECEIVED books inbound inventory.
+            </span>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <select id="po-status-filter" class="search-input" style="width: 150px;">
+              <option value="">All Statuses</option>
+              <option value="DRAFT">DRAFT</option>
+              <option value="PENDING_APPROVAL">PENDING APPROVAL</option>
+              <option value="APPROVED">APPROVED</option>
+              <option value="SENT">SENT</option>
+              <option value="RECEIVED">RECEIVED</option>
+            </select>
+            <button id="btn-refresh-pos" class="btn btn-sm">Refresh POs</button>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>PO Number</th>
+              <th>Supplier</th>
+              <th>Created Date</th>
+              <th style="text-align: right;">Items Count</th>
+              <th style="text-align: right;">Total Amount</th>
+              <th style="text-align: center;">Status</th>
+              <th style="text-align: right;">Workflow Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pos-table-body">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No purchase orders generated yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. Audit Ledger View -->
+    <section id="view-audit-ledger" class="view-section">
+      <div class="table-container">
+        <div class="table-header-toolbar">
+          <h2 style="font-size: 1rem; font-weight: 600;">Immutable Stock Movement Ledger</h2>
+          <div style="display: flex; gap: 0.5rem;">
+            <select id="ledger-type-filter" class="search-input" style="min-width: 140px;">
+              <option value="">All Movement Types</option>
+              <option value="PURCHASE">PURCHASE</option>
+              <option value="SALE">SALE</option>
+              <option value="ADJUSTMENT">ADJUSTMENT</option>
+              <option value="DAMAGE">DAMAGE</option>
+              <option value="RETURN">RETURN</option>
+              <option value="EXPIRY">EXPIRY</option>
+            </select>
+            <button id="btn-refresh-ledger" class="btn btn-sm">Refresh Ledger</button>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>SKU / Product</th>
+              <th>Movement Type</th>
+              <th style="text-align: right;">Delta</th>
+              <th style="text-align: right;">Balance After</th>
+              <th>Reference / PO</th>
+              <th>Reason Code</th>
+            </tr>
+          </thead>
+          <tbody id="ledger-table-body">
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading movement history...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. Suppliers View -->
+    <section id="view-suppliers" class="view-section">
+      <div class="table-container">
+        <div class="table-header-toolbar">
+          <h2 style="font-size: 1rem; font-weight: 600;">Supplier Network Registry</h2>
+          <button id="btn-add-supplier" class="btn btn-primary">+ Register Supplier</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Supplier Name</th>
+              <th>Contact Email</th>
+              <th style="text-align: right;">Avg Lead Time</th>
+              <th style="text-align: right;">Lead Time Variance</th>
+              <th style="text-align: right;">Reliability Score</th>
+              <th style="text-align: center;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="suppliers-table-body">
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading supplier registry...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Intelligence View -->
+    <section id="view-intelligence" class="view-section">
+      <!-- Anomalies Radar -->
+      <div class="table-container" style="margin-bottom: 1.5rem;">
+        <div class="table-header-toolbar">
+          <div>
+            <h2 style="font-size: 1rem; font-weight: 600;">⚡ Active Operational Anomalies Radar</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Z-Score statistical surges, IQR outliers, and bulk order depletions</span>
+          </div>
+          <button id="btn-rescan-anomalies" class="btn btn-sm">Rescan Anomalies</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Target Entity</th>
+              <th>Anomaly Type</th>
+              <th>Severity</th>
+              <th>Description & Contributing Evidence</th>
+            </tr>
+          </thead>
+          <tbody id="anomalies-table-body">
+            <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Scanning for operational outliers...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Portfolio 8-Dimensional Risk Matrix -->
+      <div class="table-container">
+        <div class="table-header-toolbar">
+          <div>
+            <h2 style="font-size: 1rem; font-weight: 600;">8-Dimensional Vulnerability Matrix</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Stockout, Overstock, Dead Stock, Supplier SPOF, Demand Volatility, and Capital Exposure</span>
+          </div>
+          <button id="btn-refresh-risks" class="btn btn-sm">Re-evaluate Risks</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>SKU / Product</th>
+              <th style="text-align: right;">Stockout Risk</th>
+              <th style="text-align: right;">Overstock</th>
+              <th style="text-align: right;">Dead Stock</th>
+              <th style="text-align: right;">Supplier SPOF</th>
+              <th style="text-align: right;">Capital at Risk</th>
+              <th style="text-align: center;">Vulnerability</th>
+              <th style="text-align: right;">Audit Evidence</th>
+            </tr>
+          </thead>
+          <tbody id="risks-table-body">
+            <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">Evaluating multi-dimensional risk scores...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 6. Resilience Lab & Digital Twin Simulator View (Spec §21, §22, §23) -->
+    <section id="view-resilience-lab" class="view-section">
+      <!-- Shock Injector Toolbar -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h2 style="font-size: 1.1rem; font-weight: 600;">⚡ Digital Twin Stress Testing Sandbox</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">
+              In-memory discrete-event simulation over a 45-day horizon. Evaluates baseline vs. shocked supply network stability.
+            </span>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <label style="font-size: 0.8rem; color: var(--text-secondary);" for="sim-preset-select">Canonical Shock:</label>
+            <select id="sim-preset-select" class="search-input" style="min-width: 260px;">
+              <option value="">Select Predefined Disruption...</option>
+            </select>
+            <button id="btn-run-simulation" class="btn btn-primary">⚡ Run Stress Test</button>
+          </div>
+        </div>
+
+        <!-- Shock Parameters Customizer -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; background: var(--bg-hover); padding: 1rem; border-radius: 6px;">
+          <div>
+            <label class="form-label" for="sim-shock-type">Disruption Type</label>
+            <select id="sim-shock-type" class="form-input">
+              <option value="SUPPLIER_OUTAGE">Supplier Outage</option>
+              <option value="DEMAND_SURGE">Demand Surge</option>
+              <option value="LEAD_TIME_INFLATION">Lead-Time Inflation</option>
+              <option value="CAPITAL_FREEZE">Working Capital Freeze</option>
+              <option value="CORRELATED_FAILURE">Correlated Multi-Node Failure</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" for="sim-duration">Duration (Days)</label>
+            <input type="number" id="sim-duration" class="form-input" value="30" min="5" max="60">
+          </div>
+          <div>
+            <label class="form-label" for="sim-magnitude">Magnitude (Multiplier / Delay)</label>
+            <input type="number" id="sim-magnitude" class="form-input" value="2.5" step="0.5" min="1.0">
+          </div>
+          <div>
+            <label class="form-label" for="sim-target-category">Target Category (Optional)</label>
+            <input type="text" id="sim-target-category" class="form-input" placeholder="e.g. Sensors, Semiconductors">
+          </div>
+        </div>
+      </div>
+
+      <!-- Impact Scorecard Grid -->
+      <div class="pulse-grid" style="margin-bottom: 1.5rem;">
+        <div class="card">
+          <div class="card-title">Projected Stockout Incidents</div>
+          <div id="sim-stockout-incidents" class="card-value" style="color: var(--accent-rose);">0</div>
+          <div class="card-hint">Additional stockout days caused by shock</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Revenue Exposure at Risk</div>
+          <div id="sim-revenue-exposure" class="card-value" style="color: var(--accent-rose);">₹0.00</div>
+          <div class="card-hint">Unmet customer demand valuation</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Resilience Score Drop</div>
+          <div id="sim-resilience-delta" class="card-value" style="color: var(--accent-amber);">0.0 pts</div>
+          <div class="card-hint">Degradation from baseline 100</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Time to Recovery (TTR)</div>
+          <div id="sim-ttr-days" class="card-value" style="color: var(--accent-blue);">0 Days</div>
+          <div class="card-hint">Days to restore safety stock buffer</div>
+        </div>
+      </div>
+
+      <!-- Actionable Mitigation Strategies Card -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;">
+          🛡️ Automated Mitigation Strategies & Cost-Benefit Analysis (Spec §23)
+        </h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Quantified operational response options to mitigate projected stockouts and protect working capital.
+        </p>
+        <div id="sim-mitigations-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+          <div style="color: var(--text-muted); font-size: 0.85rem;">Run a simulation to generate evaluated mitigation trade-offs.</div>
+        </div>
+      </div>
+
+      <!-- 45-Day Discrete-Event Trajectory Table -->
+      <div class="table-container">
+        <div class="table-header-toolbar">
+          <h2 style="font-size: 1rem; font-weight: 600;">Discrete-Event Trajectory: Baseline vs. Shocked Supply Network</h2>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Comparing daily aggregate on-hand stock and stockout events</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Simulation Day</th>
+              <th>Calendar Date</th>
+              <th style="text-align: right;">Baseline On-Hand</th>
+              <th style="text-align: right;">Shocked On-Hand</th>
+              <th style="text-align: right;">Stockout Events</th>
+              <th style="text-align: right;">Revenue Lost (₹)</th>
+              <th style="text-align: center;">Disruption Status</th>
+            </tr>
+          </thead>
+          <tbody id="sim-trajectory-tbody">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Select a canonical shock or configure parameters to run the digital twin simulator.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7. Multitier Supply Network Topology View (Spec §28, §29, §30) -->
+    <section id="view-supply-network" class="view-section">
+      <!-- Network Summary Scorecard -->
+      <div class="pulse-grid" style="margin-bottom: 1.5rem;">
+        <div class="card">
+          <div class="card-title">Network Entities (Nodes)</div>
+          <div id="net-total-nodes" class="card-value">0</div>
+          <div class="card-hint">Tier-2, Tier-1, SKUs & Facilities</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Dependency Supply Links</div>
+          <div id="net-total-edges" class="card-value" style="color: var(--accent-blue);">0</div>
+          <div class="card-hint">Feed, Component & Storage paths</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Single Points of Failure (SPOFs)</div>
+          <div id="net-spofs-count" class="card-value" style="color: var(--accent-rose);">0</div>
+          <div class="card-hint">Critical zero-redundancy vendors</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Max Blast Radius</div>
+          <div id="net-max-blast" class="card-value" style="color: var(--accent-amber);">0 SKUs</div>
+          <div class="card-hint">Largest downstream impact path</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Network Fragility Index</div>
+          <div id="net-mean-fragility" class="card-value" style="color: var(--accent-emerald);">0.0</div>
+          <div class="card-hint">Mean topological vulnerability (0-100)</div>
+        </div>
+      </div>
+
+      <!-- Interactive Multitier Visual Topology Graph Stage -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h2 style="font-size: 1.1rem; font-weight: 600;">🌐 Multitier Supply Network Topology & Dependency Graph</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">
+              Hierarchical dependency flow: Tier-2 (Raw Materials) → Tier-1 (Suppliers) → Finished SKUs → Fulfilment Facilities (Spec §28, §30).
+            </span>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <select id="net-filter-type" class="search-input" style="width: 170px;">
+              <option value="">All Tiers & Entities</option>
+              <option value="TIER_2_SUPPLIER">Tier-2 Raw Materials</option>
+              <option value="TIER_1_SUPPLIER">Tier-1 Direct Vendors</option>
+              <option value="PRODUCT">Finished Products (SKUs)</option>
+              <option value="LOCATION">Fulfilment Facilities</option>
+            </select>
+            <button id="btn-toggle-spof-highlight" class="btn btn-sm">Highlight SPOFs</button>
+            <button id="btn-refresh-topology" class="btn btn-sm">Refresh Graph</button>
+          </div>
+        </div>
+
+        <!-- Graph Visualization Canvas & Inspector Split Layout -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; min-height: 520px;">
+          <!-- SVG Graph Rendering Container -->
+          <div id="network-canvas-container" style="background: var(--bg-primary); border: 1px solid var(--border-medium); border-radius: 8px; position: relative; overflow: auto; min-height: 500px;">
+            <svg id="network-svg-canvas" width="100%" height="520" style="min-width: 600px; display: block;"></svg>
+            <div id="network-graph-legend" style="position: absolute; bottom: 10px; left: 10px; background: rgba(15, 23, 42, 0.85); padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.7rem; display: flex; gap: 0.75rem; border: 1px solid var(--border-subtle);">
+              <span style="display: flex; align-items: center; gap: 0.3rem;"><span style="width: 10px; height: 10px; background: #a855f7; border-radius: 2px;"></span> Tier-2 Raw</span>
+              <span style="display: flex; align-items: center; gap: 0.3rem;"><span style="width: 10px; height: 10px; background: #38bdf8; border-radius: 2px;"></span> Tier-1 Vendor</span>
+              <span style="display: flex; align-items: center; gap: 0.3rem;"><span style="width: 10px; height: 10px; background: #10b981; border-radius: 2px;"></span> Finished SKU</span>
+              <span style="display: flex; align-items: center; gap: 0.3rem;"><span style="width: 10px; height: 10px; background: #f59e0b; border-radius: 2px;"></span> Facility Hub</span>
+              <span style="display: flex; align-items: center; gap: 0.3rem;"><span style="width: 10px; height: 10px; background: #f43f5e; border-radius: 50%;"></span> SPOF Risk</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Node Inspector & Outage Simulator Panel -->
+          <div id="network-node-inspector" style="background: var(--bg-surface); border: 1px solid var(--border-medium); border-radius: 8px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                <div>
+                  <span id="inspect-node-type-badge" class="badge badge-normal">SELECT NODE</span>
+                  <h3 id="inspect-node-label" style="font-size: 1.05rem; font-weight: 600; margin-top: 0.25rem;">Interactive Inspector</h3>
+                </div>
+                <span id="inspect-node-spof-badge" class="badge badge-critical" style="display: none;">SPOF CRITICAL</span>
+              </div>
+
+              <div id="inspect-node-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; font-size: 0.8rem;">
+                <div style="background: var(--bg-hover); padding: 0.5rem; border-radius: 4px;">
+                  <div style="color: var(--text-muted); font-size: 0.7rem;">Fragility Index</div>
+                  <div id="inspect-node-fragility" style="font-weight: 700; color: var(--accent-amber);">-- / 100</div>
+                </div>
+                <div style="background: var(--bg-hover); padding: 0.5rem; border-radius: 4px;">
+                  <div style="color: var(--text-muted); font-size: 0.7rem;">Betweenness</div>
+                  <div id="inspect-node-betweenness" style="font-weight: 700; color: var(--accent-blue);">--</div>
+                </div>
+                <div style="background: var(--bg-hover); padding: 0.5rem; border-radius: 4px;">
+                  <div style="color: var(--text-muted); font-size: 0.7rem;">Downstream Blast</div>
+                  <div id="inspect-node-blast" style="font-weight: 700; color: var(--accent-rose);">-- SKUs</div>
+                </div>
+                <div style="background: var(--bg-hover); padding: 0.5rem; border-radius: 4px;">
+                  <div style="color: var(--text-muted); font-size: 0.7rem;">Revenue Exposure</div>
+                  <div id="inspect-node-exposure" style="font-weight: 700; color: var(--accent-emerald);">₹0.00</div>
+                </div>
+              </div>
+
+              <!-- Connected Dependencies View -->
+              <div style="margin-bottom: 1rem;">
+                <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.35rem;">
+                  Immediate Dependency Cascade
+                </div>
+                <div id="inspect-node-cascade" style="font-size: 0.8rem; color: var(--text-muted); max-height: 140px; overflow-y: auto;">
+                  Click on any node in the topology canvas to inspect upstream inputs and downstream consumers.
+                </div>
+              </div>
+            </div>
+
+            <!-- Outage Simulation Action Trigger -->
+            <div>
+              <button id="btn-simulate-node-outage" class="btn btn-danger" style="width: 100%; display: none;">
+                ⚡ Simulate Total Node Outage
+              </button>
+              <div id="inspect-outage-report" style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-secondary); display: none;">
+                <!-- Filled on simulation -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Critical Bottlenecks & SPOFs Table -->
+      <div class="table-container">
+        <div class="table-header-toolbar">
+          <div>
+            <h2 style="font-size: 1rem; font-weight: 600;">⚠️ Critical Network Bottlenecks & Single Points of Failure</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">
+              Nodes with high betweenness centrality, lack of supply redundancy, or elevated disruption blast radii (Spec §29).
+            </span>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Entity / Node</th>
+              <th>Tier & Type</th>
+              <th style="text-align: center;">SPOF Vulnerability</th>
+              <th style="text-align: right;">Fragility Index</th>
+              <th style="text-align: right;">Betweenness</th>
+              <th style="text-align: right;">Blast Radius</th>
+              <th style="text-align: right;">Downstream Exposure (₹)</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="network-bottlenecks-tbody">
+            <tr>
+              <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading critical bottleneck analysis...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 8. Capital Optimization & Working Capital Allocation Engine (Phase 9, Spec §31, §32, §33) -->
+    <section id="view-capital" class="view-section">
+      <!-- 6-card Executive Capital & Velocity Scorecard -->
+      <div class="pulse-grid" style="margin-bottom: 1.5rem;">
+        <div class="card">
+          <div class="card-title">Total Working Capital</div>
+          <div id="cap-total" class="card-value">₹0.00</div>
+          <div class="card-hint">Total inventory book value</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Portfolio Velocity (ITR)</div>
+          <div id="cap-velocity-itr" class="card-value" style="color: var(--accent-emerald);">0.0x</div>
+          <div id="cap-velocity-dsi" class="card-hint">DSI: 0.0 days</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Capital Gini Index</div>
+          <div id="cap-gini" class="card-value" style="color: var(--accent-blue);">0.00</div>
+          <div id="cap-concentration" class="card-hint">Concentration top 3: 0%</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Dead Stagnant Capital</div>
+          <div id="cap-dead" class="card-value" style="color: var(--accent-rose);">₹0.00</div>
+          <div id="cap-dead-pct" class="card-hint">0% of total capital</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Overstock Buffer Capital</div>
+          <div id="cap-overstock" class="card-value" style="color: var(--accent-amber);">₹0.00</div>
+          <div class="card-hint">Excess above target buffers</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Rebalance Potential</div>
+          <div id="cap-rebalance-potential" class="card-value" style="color: var(--accent-emerald);">₹0.00</div>
+          <div id="cap-rebalance-hint" class="card-hint">Available for reinvestment</div>
+        </div>
+      </div>
+
+      <!-- Section A: Multi-Echelon Buffer Rebalancing Sandbox (Spec §32) -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+          <div>
+            <h2 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 0;">Multi-Echelon Buffer Rebalancing Sandbox</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">Dynamic capital reallocation: harvest capital from overstocked buffers to finance stockout-vulnerable SKUs.</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <div>
+              <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">Target Service Level</label>
+              <select id="rebalance-service-level" class="form-control" style="font-size: 0.85rem; padding: 0.35rem 0.6rem;">
+                <option value="0.90">90.0% (Z=1.28)</option>
+                <option value="0.95" selected>95.0% (Z=1.65 - Balanced)</option>
+                <option value="0.98">98.0% (Z=2.05 - High Resiliency)</option>
+                <option value="0.99">99.0% (Z=2.33 - Critical Protection)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">Budget Ceiling (₹, optional)</label>
+              <input type="number" id="rebalance-budget-ceiling" placeholder="Unconstrained" class="form-control" style="font-size: 0.85rem; padding: 0.35rem 0.6rem; width: 140px;">
+            </div>
+            <button id="btn-run-rebalance" class="btn btn-primary" style="margin-top: 1.1rem;">
+              <span class="icon">⚖️</span> Run Optimization
+            </button>
+          </div>
+        </div>
+
+        <!-- Rebalance Summary Badges -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; background: var(--bg-surface); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Capital to Release (Harvest)</div>
+            <div id="reb-cap-release" style="font-size: 1.3rem; font-weight: 700; color: var(--accent-emerald);">₹0.00</div>
+            <div id="reb-skus-release" style="font-size: 0.75rem; color: var(--text-secondary);">0 SKUs overstocked</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Capital to Inject (Deficit)</div>
+            <div id="reb-cap-inject" style="font-size: 1.3rem; font-weight: 700; color: var(--accent-rose);">₹0.00</div>
+            <div id="reb-skus-inject" style="font-size: 0.75rem; color: var(--text-secondary);">0 SKUs understocked</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Net Portfolio Delta</div>
+            <div id="reb-net-delta" style="font-size: 1.3rem; font-weight: 700; color: var(--accent-blue);">₹0.00</div>
+            <div id="reb-net-status" style="font-size: 0.75rem; color: var(--text-secondary);">Self-financing status</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Capital Rebalancing Efficiency</div>
+            <div id="reb-efficiency" style="font-size: 1.3rem; font-weight: 700; color: var(--accent-amber);">100%</div>
+            <div style="font-size: 0.75rem; color: var(--text-secondary);">Budget constraint adherence</div>
+          </div>
+        </div>
+
+        <!-- Rebalance SKU Actions Table -->
+        <div class="table-container" style="max-height: 280px; overflow-y: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Product</th>
+                <th style="text-align: right;">Current Stock</th>
+                <th style="text-align: right;">Target Buffer (S*)</th>
+                <th style="text-align: right;">Discrepancy</th>
+                <th>Rebalance Action</th>
+                <th style="text-align: right;">Capital Impact (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="rebalance-skus-tbody">
+              <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Click 'Run Optimization' to compute optimal buffer allocations.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section B: Working Capital Pareto & Capital Productivity Quadrants (Spec §31) -->
+      <div class="table-container" style="margin-bottom: 1.5rem;">
+        <div class="table-header-toolbar">
+          <div>
+            <h2 style="font-size: 1rem; font-weight: 600; margin: 0;">Working Capital Pareto Analysis & Velocity Quadrants</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">ABC valuation classification, Inventory Turnover Ratio (ITR), and Days Sales of Inventory (DSI)</span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--accent-blue); font-weight: 500;">
+            Gini Coefficient: <span id="pareto-gini-badge">0.00</span>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Product Name</th>
+              <th>Pareto Class</th>
+              <th style="text-align: right;">Stock Valuation (₹)</th>
+              <th style="text-align: right;">Cumulative Capital %</th>
+              <th style="text-align: right;">Annual COGS (₹)</th>
+              <th style="text-align: right;">Turnover (ITR)</th>
+              <th style="text-align: right;">DSI (Days)</th>
+              <th>Capital Productivity Quadrant</th>
+            </tr>
+          </thead>
+          <tbody id="capital-skus-tbody">
+            <tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Loading capital breakdown...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Section C: Dead Stock Reclamation & Liquidation Playbook (Spec §33) -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+          <div>
+            <h2 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 0;">Dead Stock Reclamation & Liquidation Playbook</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">Systematic liquidation pathways: Markdown discounts, supplier buyback clauses, cross-catalogue bundling, and scrap tax shields.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="badge" style="background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); font-weight: 600; font-size: 0.85rem;" id="dead-skus-badge">0 Stagnant SKUs</span>
+            <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); font-weight: 600; font-size: 0.85rem;" id="dead-recoverable-badge">₹0.00 Total Recoverable</span>
+          </div>
+        </div>
+
+        <div id="dead-stock-container" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Scanning stagnant catalogue records...</div>
+        </div>
+      </div>
+
+      <!-- Section D: Holding Cost Inflation & Liquidity Sensitivity Curve -->
+      <div class="card">
+        <div class="card-header" style="margin-bottom: 1rem;">
+          <h2 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 0;">Holding Cost Rate Sensitivity Profile</h2>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">Evaluation of carrying cost drag against gross operating margins across inflation regimes (15% - 30%).</p>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Holding Cost Rate (%)</th>
+                <th style="text-align: right;">Total Working Capital (₹)</th>
+                <th style="text-align: right;">Annual Carrying Cost (₹)</th>
+                <th style="text-align: right;">Daily Carrying Drag (₹)</th>
+                <th style="text-align: right;">Overstock Burden (₹)</th>
+                <th style="text-align: right;">Dead Stock Bleed (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="sensitivity-tbody">
+              <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Loading holding cost sensitivity...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Action Studio & Decision Ledger View (Spec §24, §25, §26, §27) -->
+    <section id="view-decision-ledger" class="view-section">
+      <!-- Governance Compliance Scorecard -->
+      <div class="pulse-grid" style="margin-bottom: 1.5rem;">
+        <div class="card">
+          <div class="card-title">Decisions Recorded</div>
+          <div id="gov-total-decisions" class="card-value">0</div>
+          <div class="card-hint">Total human-in-the-loop decisions</div>
+        </div>
+        <div class="card">
+          <div class="card-title">AI Approval Rate</div>
+          <div id="gov-approval-rate" class="card-value" style="color: var(--accent-emerald);">0.0%</div>
+          <div class="card-hint">Recommendations accepted as-is</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Operator Override Rate</div>
+          <div id="gov-mod-rate" class="card-value" style="color: var(--accent-amber);">0.0%</div>
+          <div class="card-hint">Modified with operational reason</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Rejection Rate</div>
+          <div id="gov-rejection-rate" class="card-value" style="color: var(--accent-rose);">0.0%</div>
+          <div class="card-hint">Suppressed with justification</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Stockouts Avoided</div>
+          <div id="gov-stockouts-avoided" class="card-value" style="color: var(--accent-blue);">0</div>
+          <div class="card-hint">Closed-loop verified incidents</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Working Capital Preserved</div>
+          <div id="gov-preserved-capital" class="card-value" style="color: var(--accent-emerald);">₹0.00</div>
+          <div class="card-hint">Estimated disruption savings</div>
+        </div>
+      </div>
+
+      <!-- Action Studio: Active Recommendations Queue -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h2 style="font-size: 1.1rem; font-weight: 600;">⚡ Action Studio: AI Recommendations Queue</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">
+              Explainable operational directives with WHAT, WHY, EVIDENCE, CONFIDENCE & ALTERNATIVES (Spec §25).
+            </span>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <select id="decision-filter-status" class="search-input" style="width: 150px;">
+              <option value="PENDING">Pending (Actionable)</option>
+              <option value="">All Recommendations</option>
+              <option value="APPROVED">Approved</option>
+              <option value="MODIFIED">Modified</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+            <button id="btn-refresh-decision-recs" class="btn btn-sm">Refresh Queue</button>
+          </div>
+        </div>
+
+        <div id="decision-cards-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1rem;">
+          <div style="color: var(--text-muted); font-size: 0.85rem; padding: 1.5rem; text-align: center; grid-column: 1 / -1;">
+            Loading active recommendation cards...
+          </div>
+        </div>
+      </div>
+
+      <!-- Immutable Decision Ledger Table -->
+      <div class="table-container">
+        <div class="table-header-toolbar">
+          <div>
+            <h2 style="font-size: 1rem; font-weight: 600;">📋 Immutable Chronological Decision Ledger</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">
+              Full governance audit trail of human decisions, accountability reasons & closed-loop outcomes (Spec §27).
+            </span>
+          </div>
+          <button id="btn-refresh-decision-ledger" class="btn btn-sm">Refresh Ledger</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Decided At</th>
+              <th>SKU / Product</th>
+              <th style="text-align: center;">Decision Type</th>
+              <th>Operator</th>
+              <th>Operational Reason / Notes</th>
+              <th style="text-align: center;">Execution</th>
+              <th>Closed-Loop Outcome</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="decision-ledger-tbody">
+            <tr>
+              <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading decision ledger...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 10. System Observability & Autonomous Self-Healing Guardrails (Phase 10, Spec §36) -->
+    <section id="view-system-health" class="view-section">
+      <!-- 4-card Production Observability Scorecard -->
+      <div class="pulse-grid" style="margin-bottom: 1.5rem;">
+        <div class="card">
+          <div class="card-title">Database Storage Footprint</div>
+          <div id="obs-db-size" class="card-value">0.00 KB</div>
+          <div id="obs-db-records" class="card-hint">0 total records across tables</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Autonomous Circuit Breaker</div>
+          <div id="obs-circuit-status" class="card-value" style="color: var(--accent-emerald);">CLOSED_NORMAL</div>
+          <div id="obs-circuit-mode" class="card-hint">Operating Mode: AUTONOMOUS</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Statistical Demand Drift</div>
+          <div id="obs-drift-status" class="card-value" style="color: var(--accent-emerald);">STABLE</div>
+          <div id="obs-drift-count" class="card-hint">0 drifted SKUs requiring retrain</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Self-Healing Integrity Status</div>
+          <div id="obs-heal-status" class="card-value" style="color: var(--accent-blue);">AUDITED (OK)</div>
+          <div id="obs-heal-repairs" class="card-hint">0 discrepancies detected</div>
+        </div>
+      </div>
+
+      <!-- Autonomous Self-Healing Control Panel -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+          <div>
+            <h2 style="font-size: 1.1rem; font-weight: 600; margin: 0;">Autonomous Self-Healing Guardrail Console</h2>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.25rem 0 0 0;">Continuous multi-invariant reconciliation: stock ledger synchronization, negative balance elimination, and PO subtotal auditing.</p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <button id="btn-run-reconciliation" class="btn btn-primary">
+              <span class="icon">🩺</span> Run Integrity Reconciler
+            </button>
+          </div>
+        </div>
+        <div id="heal-results-box" style="background: var(--bg-surface); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.85rem;">
+          <div style="color: var(--text-muted);">Click 'Run Integrity Reconciler' to verify and self-heal core database invariants.</div>
+        </div>
+      </div>
+
+      <!-- Statistical Demand Drift Analysis Table -->
+      <div class="table-container" style="margin-bottom: 1.5rem;">
+        <div class="table-header-toolbar">
+          <div>
+            <h2 style="font-size: 1rem; font-weight: 600; margin: 0;">Demand Distribution Drift & Concept Shift Telemetry</h2>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Wasserstein divergence and Z-distance tracking between baseline and recent demand horizons</span>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <select id="drift-window-select" class="form-control" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;">
+              <option value="14">Last 14 Days</option>
+              <option value="30" selected>Last 30 Days</option>
+              <option value="60">Last 60 Days</option>
+            </select>
+            <button id="btn-refresh-drift" class="btn btn-sm">Refresh Drift</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Product Name</th>
+              <th style="text-align: right;">Baseline Mean</th>
+              <th style="text-align: right;">Recent Mean</th>
+              <th style="text-align: right;">Mean Shift (%)</th>
+              <th style="text-align: right;">Volatility Shift (%)</th>
+              <th style="text-align: right;">Drift Z-Score</th>
+              <th>Drift Severity</th>
+              <th>Retraining Required</th>
+            </tr>
+          </thead>
+          <tbody id="drift-tbody">
+            <tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Loading demand drift analysis...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- System Diagnostic Health Grid & Tables Breakdown -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">Core Database Schema & Record Distribution (17 Tables)</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <div class="card-title">Database Status</div>
+            <div id="health-db-status" class="num-cell" style="font-weight: 600;">--</div>
+          </div>
+          <div>
+            <div class="card-title">Database Engine</div>
+            <div id="health-db-engine" class="num-cell">--</div>
+          </div>
+          <div>
+            <div class="card-title">Pragma Integrity</div>
+            <div id="health-db-integrity" class="num-cell" style="color: var(--accent-emerald); font-weight: 600;">OK</div>
+          </div>
+          <div>
+            <div class="card-title">Server Uptime</div>
+            <div id="health-uptime" class="num-cell">--</div>
+          </div>
+          <div>
+            <div class="card-title">AI Provider Mode</div>
+            <div id="health-llm-mode" class="num-cell">--</div>
+          </div>
+        </div>
+
+        <div id="table-distribution-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; background: var(--bg-surface); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Time-Series Forecasting & ML Model Health (Spec §36) -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2 style="font-size: 1.1rem; margin: 0;">Machine Learning & Time-Series Model Health</h2>
+          <span id="model-health-status" class="badge badge-normal">MODEL STATUS: HEALTHY</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <div class="card-title">Active Model Pipeline</div>
+            <div id="model-pipeline-name" class="num-cell" style="font-size: 0.85rem; font-weight: 600;">TRINETRA Multi-Model Benchmark</div>
+          </div>
+          <div>
+            <div class="card-title">Pipeline Version</div>
+            <div id="model-version-tag" class="num-cell">v1.0.0-production</div>
+          </div>
+          <div>
+            <div class="card-title">Data Drift Telemetry</div>
+            <div id="model-drift-status" class="num-cell" style="color: var(--accent-emerald); font-weight: 600;">STABLE (NO DRIFT)</div>
+          </div>
+          <div>
+            <div class="card-title">Cached Forecast Points</div>
+            <div id="model-cached-points" class="num-cell" style="font-weight: 600;">0 points</div>
+          </div>
+        </div>
+
+        <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 0.5rem;">
+          Active Champion Distribution Across Monitored Catalogue
+        </h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Champion Algorithm</th>
+                <th style="text-align: right;">SKU Count</th>
+                <th style="text-align: right;">Average Validation MAE</th>
+                <th style="text-align: right;">Average Validation sMAPE</th>
+              </tr>
+            </thead>
+            <tbody id="model-champions-tbody">
+              <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No trained models yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Add Product Modal -->
+  <div id="product-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem;">Add New Product SKU</h3>
+        <button id="btn-close-modal" class="btn btn-sm">✕</button>
+      </div>
+      <form id="product-form">
+        <div class="form-group">
+          <label class="form-label" for="prod-name">Product Name *</label>
+          <input type="text" id="prod-name" class="form-input" required placeholder="e.g. Industrial Pressure Sensor">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="prod-category">Category *</label>
+          <input type="text" id="prod-category" class="form-input" required placeholder="e.g. Electronics, Machinery">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="prod-qty">Initial Quantity *</label>
+            <input type="number" id="prod-qty" class="form-input" required min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prod-price">Unit Price (₹) *</label>
+            <input type="number" id="prod-price" class="form-input" required min="0" step="0.01" value="0.00">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="prod-threshold">Reorder Threshold *</label>
+            <input type="number" id="prod-threshold" class="form-input" required min="0" value="10">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prod-sku">Custom SKU (Optional)</label>
+            <input type="text" id="prod-sku" class="form-input" placeholder="e.g. SKU-1001">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="prod-desc">Description</label>
+          <input type="text" id="prod-desc" class="form-input" placeholder="Component specifications">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" id="btn-cancel-modal" class="btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save SKU</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Record Movement Modal -->
+  <div id="movement-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="movement-modal-title" style="font-size: 1.1rem;">Record Stock Movement</h3>
+        <button id="btn-close-movement-modal" class="btn btn-sm">✕</button>
+      </div>
+      <form id="movement-form">
+        <input type="hidden" id="mov-product-id">
+        <div class="form-group">
+          <label class="form-label">Target Product</label>
+          <div id="mov-product-display" style="font-weight: 600; color: var(--accent-blue); padding: 0.4rem 0;">--</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="mov-type">Movement Type *</label>
+            <select id="mov-type" class="form-input" required>
+              <option value="PURCHASE">PURCHASE (Receive Stock)</option>
+              <option value="SALE">SALE (Customer Order)</option>
+              <option value="ADJUSTMENT">ADJUSTMENT (Audit Correction)</option>
+              <option value="DAMAGE">DAMAGE (Write-off)</option>
+              <option value="RETURN">RETURN (Customer Return)</option>
+              <option value="EXPIRY">EXPIRY (Scrap)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="mov-qty">Quantity *</label>
+            <input type="number" id="mov-qty" class="form-input" required min="1" value="1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mov-reason">Operational Reason *</label>
+          <input type="text" id="mov-reason" class="form-input" required placeholder="e.g. Fulfilled Order #SO-4401 or PO #PO-902">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="mov-ref">Reference Code (PO / Invoice / SO)</label>
+          <input type="text" id="mov-ref" class="form-input" placeholder="e.g. REF-2026-X">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" id="btn-cancel-movement-modal" class="btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Commit Movement</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Product Detail & Audit Drawer Modal -->
+  <div id="detail-modal" class="modal-overlay">
+    <div class="modal-box modal-box-wide">
+      <div class="modal-header">
+        <div>
+          <h3 id="detail-product-name" style="font-size: 1.25rem;">Product Details</h3>
+          <span id="detail-product-sku" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-blue);">SKU-XXXX</span>
+        </div>
+        <button id="btn-close-detail-modal" class="btn btn-sm">✕</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem;">
+        <div class="card" style="padding: 0.75rem;">
+          <div class="card-title">Current Stock</div>
+          <div id="detail-qty" class="card-value" style="font-size: 1.3rem;">0</div>
+        </div>
+        <div class="card" style="padding: 0.75rem;">
+          <div class="card-title">Reorder Point (ROP)</div>
+          <div id="detail-rop" class="card-value" style="font-size: 1.3rem; color: var(--accent-amber);">--</div>
+        </div>
+        <div class="card" style="padding: 0.75rem;">
+          <div class="card-title">Safety Stock (SS)</div>
+          <div id="detail-ss" class="card-value" style="font-size: 1.3rem; color: var(--accent-rose);">--</div>
+        </div>
+        <div class="card" style="padding: 0.75rem;">
+          <div class="card-title">Optimal Order (EOQ)</div>
+          <div id="detail-eoq" class="card-value" style="font-size: 1.3rem; color: var(--accent-emerald);">--</div>
+        </div>
+        <div class="card" style="padding: 0.75rem;">
+          <div class="card-title">Unit Price</div>
+          <div id="detail-price" class="card-value" style="font-size: 1.3rem;">₹0.00</div>
+        </div>
+        <div class="card" style="padding: 0.75rem;">
+          <div class="card-title">Stock Status</div>
+          <div id="detail-status" style="margin-top: 0.25rem;">--</div>
+        </div>
+      </div>
+
+      <!-- Stock level coverage bar -->
+      <div style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
+          <span>Stock Health Buffer</span>
+          <span id="detail-stock-ratio">0 / 50</span>
+        </div>
+        <div class="stock-bar-wrap">
+          <div id="detail-stock-bar" class="stock-bar-fill" style="width: 50%;"></div>
+        </div>
+      </div>
+
+      <!-- Suppliers Table -->
+      <div style="margin-bottom: 1.5rem;">
+        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">
+          Active Suppliers
+        </h4>
+        <div id="detail-suppliers-container" style="font-size: 0.85rem; color: var(--text-secondary);">
+          No mapped suppliers yet.
+        </div>
+      </div>
+
+      <!-- Movement Ledger Table for SKU -->
+      <div>
+        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">
+          Recent Movement Audit Trail
+        </h4>
+        <div class="table-container" style="max-height: 250px; overflow-y: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Type</th>
+                <th style="text-align: right;">Delta</th>
+                <th style="text-align: right;">Balance</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody id="detail-movements-tbody">
+              <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No movements recorded.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      <!-- Multi-Model Demand Forecasting & Benchmark Section (Phase 4) -->
+      <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h4 style="font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-blue); font-weight: 600;">
+              📈 Demand Forecasting & Model Benchmarking
+            </h4>
+            <div id="detail-forecast-sufficiency" style="font-size: 0.75rem; color: var(--text-muted);">
+              Evaluating time-series data sufficiency...
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span id="detail-champion-badge" class="badge badge-normal">CHAMPION: --</span>
+            <button id="btn-retrain-forecast" class="btn btn-sm btn-primary">⚡ Re-benchmark SKU</button>
+          </div>
+        </div>
+
+        <!-- 14-Day Forecast Predictions Table -->
+        <div style="margin-bottom: 1rem;">
+          <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.35rem; font-weight: 600;">
+            14-Day Point Predictions & Prediction Intervals (80% / 95%)
+          </div>
+          <div class="table-container" style="max-height: 180px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Forecast Date</th>
+                  <th style="text-align: right;">Predicted Demand</th>
+                  <th style="text-align: right;">80% Confidence Interval</th>
+                  <th style="text-align: right;">95% Confidence Interval</th>
+                </tr>
+              </thead>
+              <tbody id="detail-forecast-tbody">
+                <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading forecast predictions...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Candidate Benchmark Comparison Table -->
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.35rem; font-weight: 600;">
+            Multi-Model Validation Benchmark (MAE / RMSE / sMAPE / Bias)
+          </div>
+          <div class="table-container" style="max-height: 200px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Candidate Model</th>
+                  <th>Type</th>
+                  <th style="text-align: right;">MAE</th>
+                  <th style="text-align: right;">RMSE</th>
+                  <th style="text-align: right;">sMAPE</th>
+                  <th style="text-align: right;">Bias</th>
+                  <th style="text-align: center;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="detail-benchmark-tbody">
+                <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Loading benchmark comparison...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Register Supplier Modal -->
+  <div id="supplier-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem;">Register New Supplier</h3>
+        <button id="btn-close-supplier-modal" class="btn btn-sm">✕</button>
+      </div>
+      <form id="supplier-form">
+        <div class="form-group">
+          <label class="form-label" for="supp-name">Supplier Name *</label>
+          <input type="text" id="supp-name" class="form-input" required placeholder="e.g. Vertex Microchips Ltd">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="supp-email">Contact Email</label>
+          <input type="email" id="supp-email" class="form-input" placeholder="orders@vertex.com">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="supp-lead">Avg Lead Time (Days) *</label>
+            <input type="number" id="supp-lead" class="form-input" required min="1" value="7">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="supp-reliability">Reliability (0.0 to 1.0) *</label>
+            <input type="number" id="supp-reliability" class="form-input" required min="0.0" max="1.0" step="0.05" value="0.95">
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" id="btn-cancel-supplier-modal" class="btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Supplier</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Operator Decision Override Modal (Spec §26) -->
+  <div id="decision-override-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="override-modal-title" style="font-size: 1.1rem;">Operator Decision Override</h3>
+        <button id="btn-close-override-modal" class="btn btn-sm">✕</button>
+      </div>
+      <form id="decision-override-form">
+        <input type="hidden" id="override-rec-id">
+        <input type="hidden" id="override-decision-type">
+        
+        <div id="override-summary-box" style="background: var(--bg-hover); padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.85rem;">
+          <!-- Populated by JS -->
+        </div>
+
+        <div id="override-qty-group" class="form-group" style="display: none;">
+          <label class="form-label" for="override-qty">Modified Order Quantity *</label>
+          <input type="number" id="override-qty" class="form-input" min="1" value="10">
+          <span style="font-size: 0.7rem; color: var(--text-muted);">Adjusted replenishment quantity overriding the AI recommendation.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="override-reason">Mandatory Operational Justification *</label>
+          <textarea id="override-reason" class="form-input" rows="3" required placeholder="Mandatory operational justification (e.g. Supplier minimum order batch, warehouse capacity ceiling, budget freeze)..."></textarea>
+          <span style="font-size: 0.7rem; color: var(--accent-amber);">Required for audit accountability. Minimum 5 characters.</span>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" id="btn-cancel-override-modal" class="btn">Cancel</button>
+          <button type="submit" id="btn-submit-override" class="btn btn-primary">Confirm & Log Decision</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Closed-Loop Outcome Verification Modal (Spec §27) -->
+  <div id="outcome-verify-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem;">Record Closed-Loop Outcome</h3>
+        <button id="btn-close-outcome-modal" class="btn btn-sm">✕</button>
+      </div>
+      <form id="outcome-verify-form">
+        <input type="hidden" id="outcome-decision-id">
+
+        <div id="outcome-summary-box" style="background: var(--bg-hover); padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.85rem;">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="outcome-observed-result">Observed Real-World Result *</label>
+          <textarea id="outcome-observed-result" class="form-input" rows="2" required placeholder="e.g. Stock received on time, avoided assembly line downtime, no stockout occurred."></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="outcome-stockout-avoided">Stockout Avoided?</label>
+            <select id="outcome-stockout-avoided" class="form-input">
+              <option value="1">Yes (Averted)</option>
+              <option value="0">No (Stockout Occurred)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="outcome-savings-amount">Preserved Capital (₹)</label>
+            <input type="number" id="outcome-savings-amount" class="form-input" min="0" step="100" value="0">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" id="btn-cancel-outcome-modal" class="btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Outcome Verification</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Command Palette Modal (Ctrl/Cmd + K) -->
+  <div id="palette-overlay" class="palette-overlay">
+    <div class="palette-box">
+      <div class="palette-search-wrap">
+        <span style="font-size: 1rem; color: var(--text-muted);">⌘</span>
+        <input type="text" id="palette-input" placeholder="Type a command or search inventory (e.g. 'forecast', 'outage', 'rebalance', 'SKU-0001')..." autocomplete="off">
+        <span style="font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted); background: var(--bg-deep); padding: 0.2rem 0.4rem; border-radius: var(--radius-xs); border: 1px solid var(--border-hairline);">ESC to close</span>
+      </div>
+      <div id="palette-results" class="palette-results">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
