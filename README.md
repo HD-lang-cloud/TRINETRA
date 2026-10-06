@@ -2,11 +2,50 @@
 > **SEE. FORESEE. PREPARE.**  
 > *Autonomous, Audit-Grade, Self-Healing Inventory Resilience & Decision Intelligence Operating System*
 
+[![Tests: 62/62 Passed](https://img.shields.io/badge/Tests-62%2F62%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](https://github.com)
+[![Python: 3.10+](https://img.shields.io/badge/Python-3.10%20%7C%203.13-38bdf8?style=for-the-badge&logo=python&logoColor=white)](https://github.com)
+[![Architecture: 10-Phased Clean OS](https://img.shields.io/badge/Architecture-10--Phased%20Resilience%20OS-f59e0b?style=for-the-badge)](https://github.com)
+[![UI: Control Room / Bloomberg Terminal](https://img.shields.io/badge/UI-Operations%20Control%20Room-6366f1?style=for-the-badge)](https://github.com)
+[![License: Enterprise](https://img.shields.io/badge/License-Proprietary%20%2F%20Enterprise-94a3b8?style=for-the-badge)](https://github.com)
+
+---
+
+```
+                       ┌──────────────────────────────────────────────────────────┐
+                       │               TRINETRA OPERATIONS WORKSTATION            │
+                       │    (Command Palette ⌘K | High-Density Control Room)      │
+                       └────────────────────────────┬─────────────────────────────┘
+                                                    │
+                 ┌──────────────────────────────────┴──────────────────────────────────┐
+                 ▼                                                                     ▼
+    ┌───────────────────────────┐                                         ┌───────────────────────────┐
+    │     DECISION & CONTROL    │                                         │    RESILIENCE & NETWORK   │
+    ├───────────────────────────┤                                         ├───────────────────────────┤
+    │ • Action Studio (§24-§27) │                                         │ • Digital Twin Simulation │
+    │ • Human Decision Ledger   │                                         │ • 4-Tier Supply Graph     │
+    │ • Closed-Loop Outcomes    │                                         │ • Blast-Radius Simulation │
+    │ • Buffer Rebalancing      │                                         │ • Brandes' Centrality     │
+    └─────────────┬─────────────┘                                         └─────────────┬─────────────┘
+                  │                                                                     │
+                  └─────────────────────────────────┬───────────────────────────────────┘
+                                                    │
+                                                    ▼
+                       ┌──────────────────────────────────────────────────────────┐
+                       │              AUTONOMOUS ENGINE & OBSERVABILITY           │
+                       ├──────────────────────────────────────────────────────────┤
+                       │ • Multi-Model Benchmark (Baseline / GBDT / Deep GRU)     │
+                       │ • 8D Vulnerability & DNA Behavioral Classification       │
+                       │ • Continuous Invariant Self-Healing Database Reconciler  │
+                       │ • Statistical Demand Drift (Wasserstein / Z-Score)       │
+                       │ • Autonomous Safety-Trip Circuit Breaker                 │
+                       └──────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 👁️ Overview
 
-**TRINETRA** is an enterprise-grade inventory intelligence and resilience operating system built to protect mission-critical supply networks from disruptions, stockouts, capital lockup, and data drift. It bridges real-time inventory management with stochastic digital twin simulations, time-series forecasting, multi-echelon buffer allocation, and autonomous self-healing database guardrails.
+**TRINETRA** is an enterprise-grade inventory intelligence and resilience operating system built to protect mission-critical supply networks from disruptions, stockouts, capital lockup, and data drift. Inspired by the Bloomberg Terminal and modern aerospace/industrial control rooms, it bridges real-time inventory management with stochastic digital twin simulations, time-series forecasting tournaments, multi-echelon buffer allocation, and autonomous self-healing database guardrails.
 
 ---
 
