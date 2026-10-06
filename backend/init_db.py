@@ -353,6 +353,44 @@ CREATE TABLE IF NOT EXISTS model_versions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 15. Governed Autonomous Agent Operations & Guardrail Auditing
+CREATE TABLE IF NOT EXISTS agent_runs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT UNIQUE NOT NULL,
+    agent_name TEXT NOT NULL,
+    agent_goal TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'RUNNING' CHECK(status IN ('RUNNING', 'COMPLETED', 'BLOCKED', 'FAILED')),
+    governance_mode TEXT NOT NULL DEFAULT 'HUMAN_APPROVAL_REQUIRED' CHECK(governance_mode IN ('AUTONOMOUS_APPROVED', 'HUMAN_APPROVAL_REQUIRED', 'CIRCUIT_BREAKER_BLOCKED')),
+    confidence_score REAL NOT NULL DEFAULT 0.0,
+    rationale TEXT NOT NULL,
+    actions_proposed_json TEXT,
+    guardrail_decision TEXT NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS agent_tool_executions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    agent_run_id TEXT NOT NULL,
+    tool_name TEXT NOT NULL,
+    input_parameters_json TEXT,
+    output_result_json TEXT,
+    execution_status TEXT NOT NULL DEFAULT 'SUCCESS' CHECK(execution_status IN ('SUCCESS', 'FAILURE', 'GUARDRAIL_BLOCKED')),
+    executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (agent_run_id) REFERENCES agent_runs(run_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS agent_guardrail_evaluations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    agent_run_id TEXT NOT NULL,
+    policy_name TEXT NOT NULL,
+    rule_evaluated TEXT NOT NULL,
+    verdict TEXT NOT NULL CHECK(verdict IN ('PASS', 'VIOLATION_BLOCKED', 'HUMAN_OVERRIDE_ESCALATION')),
+    remediation_required TEXT,
+    evaluated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (agent_run_id) REFERENCES agent_runs(run_id) ON DELETE CASCADE
+);
+
 -- Indexes for Query Performance & Analytics
 CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku);
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
@@ -362,6 +400,7 @@ CREATE INDEX IF NOT EXISTS idx_demand_product_date ON demand_history(product_id,
 CREATE INDEX IF NOT EXISTS idx_forecasts_product_date ON forecasts(product_id, forecast_date);
 CREATE INDEX IF NOT EXISTS idx_risk_scores_product ON risk_scores(product_id);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action, created_at);
+CREATE INDEX IF NOT EXISTS idx_agent_runs_run_id ON agent_runs(run_id);
 """
 
 

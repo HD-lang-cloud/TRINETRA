@@ -9,6 +9,7 @@ from services.decision_service import DecisionService
 from services.network_service import SupplyNetworkService
 from services.capital_optimizer_service import CapitalOptimizerService
 from services.observability_service import SystemObservabilityService
+from services.agent_governance_service import AgentGovernanceService
 
 __all__ = [
     "InventoryService",
@@ -21,5 +22,6 @@ __all__ = [
     "DecisionService",
     "SupplyNetworkService",
     "CapitalOptimizerService",
-    "SystemObservabilityService"
+    "SystemObservabilityService",
+    "AgentGovernanceService"
 ]

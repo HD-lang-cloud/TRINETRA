@@ -114,6 +114,8 @@ function initNavigation() {
         fetchCapitalView();
       } else if (targetView === "decision-ledger") {
         fetchDecisionStudioView();
+      } else if (targetView === "agent-ops") {
+        fetchAgentRuns();
       } else if (targetView === "system-health") {
         checkHealth();
       }
@@ -2823,10 +2825,244 @@ function switchView(viewId) {
     fetchCapitalView();
   } else if (viewId === "decision-ledger") {
     fetchDecisionStudioView();
+  } else if (viewId === "agent-ops") {
+    fetchAgentRuns();
   } else if (viewId === "system-health") {
     checkHealth();
   }
 }
+
+// --- 16. Governed Agent Operations & Audit Provenance ---
+async function fetchAgentRuns() {
+  const tbody = document.getElementById("agent-runs-tbody");
+  if (!tbody) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/agents/runs`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const runs = json.data?.runs || [];
+
+    // Update Overview Metrics
+    const totalRunsEl = document.getElementById("agent-total-runs");
+    const guardrailRateEl = document.getElementById("agent-guardrail-rate");
+    const escalationCountEl = document.getElementById("agent-escalation-count");
+    if (totalRunsEl) totalRunsEl.textContent = runs.length;
+
+    let escalations = 0;
+    let passed = 0;
+    runs.forEach(r => {
+      if (r.governance_mode === "HUMAN_APPROVAL_REQUIRED" || r.guardrail_decision === "HUMAN_OVERRIDE_ESCALATION") {
+        escalations++;
+      }
+      if (r.guardrail_decision === "PASS") {
+        passed++;
+      }
+    });
+
+    if (guardrailRateEl && runs.length > 0) {
+      const rate = Math.round((passed / runs.length) * 100);
+      guardrailRateEl.textContent = `${rate}%`;
+    }
+    if (escalationCountEl) escalationCountEl.textContent = escalations;
+
+    if (runs.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No governed agent runs recorded yet. Execute Autopilot or Shock Mitigator above.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = runs.map(run => {
+      const modeBadge = run.governance_mode === "HUMAN_APPROVAL_REQUIRED"
+        ? `<span class="badge badge-warning" style="font-size: 0.68rem;">HUMAN APPROVAL GATE</span>`
+        : `<span class="badge badge-normal" style="font-size: 0.68rem;">AUTONOMOUS APPROVED</span>`;
+
+      const statusBadge = run.status === "COMPLETED"
+        ? `<span style="color: var(--accent-emerald); font-weight: 600;">COMPLETED</span>`
+        : `<span style="color: var(--accent-rose); font-weight: 600;">${escapeHtml(run.status)}</span>`;
+
+      return `
+        <tr style="cursor: pointer;" onclick="inspectAgentRun('${escapeHtml(run.run_id)}')">
+          <td style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan);">${escapeHtml(run.run_id)}</td>
+          <td style="font-weight: 600;">${escapeHtml(run.agent_name)}</td>
+          <td>${statusBadge}</td>
+          <td>${modeBadge}</td>
+          <td style="text-align: right; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">${escapeHtml(run.created_at || "--")}</td>
+        </tr>
+      `;
+    }).join("");
+
+    // Auto inspect first run if none selected
+    if (runs.length > 0) {
+      inspectAgentRun(runs[0].run_id);
+    }
+  } catch (err) {
+    console.error("fetchAgentRuns error:", err);
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--accent-rose); padding: 1rem;">Failed to load agent runs: ${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+async function inspectAgentRun(runId) {
+  const placeholder = document.getElementById("agent-trace-placeholder");
+  const content = document.getElementById("agent-trace-content");
+  const runIdEl = document.getElementById("agent-inspect-id");
+  const titleEl = document.getElementById("agent-inspect-title");
+  const verdictEl = document.getElementById("agent-inspect-verdict");
+  const rationaleEl = document.getElementById("agent-inspect-rationale");
+  const guardrailListEl = document.getElementById("agent-guardrail-list");
+  const toolListEl = document.getElementById("agent-tool-list");
+  const actionsListEl = document.getElementById("agent-actions-list");
+
+  if (!content) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/agents/runs/${runId}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const data = json.data;
+
+    if (placeholder) placeholder.style.display = "none";
+    content.style.display = "block";
+
+    if (runIdEl) runIdEl.textContent = data.run_id;
+    if (titleEl) titleEl.textContent = `${data.agent_name} Trace`;
+    if (rationaleEl) rationaleEl.textContent = data.rationale || data.agent_goal;
+
+    if (verdictEl) {
+      verdictEl.textContent = `POLICY: ${data.guardrail_decision}`;
+      verdictEl.className = data.guardrail_decision === "PASS"
+        ? "badge badge-normal"
+        : (data.guardrail_decision === "HUMAN_OVERRIDE_ESCALATION" ? "badge badge-warning" : "badge badge-critical");
+    }
+
+    // Render Guardrails
+    if (guardrailListEl) {
+      if (!data.guardrail_evaluations || data.guardrail_evaluations.length === 0) {
+        guardrailListEl.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted);">No policy evaluations logged.</div>`;
+      } else {
+        guardrailListEl.innerHTML = data.guardrail_evaluations.map(g => {
+          const isPass = g.verdict === "PASS";
+          const color = isPass ? "var(--accent-emerald)" : (g.verdict.includes("ESCALATION") ? "var(--accent-amber)" : "var(--accent-rose)");
+          return `
+            <div style="background: var(--bg-hover); padding: 0.5rem 0.75rem; border-radius: 4px; border-left: 3px solid ${color};">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; font-size: 0.8rem; color: #ffffff;">${escapeHtml(g.policy_name)}</span>
+                <span style="font-family: var(--font-mono); font-size: 0.7rem; color: ${color}; font-weight: 600;">${escapeHtml(g.verdict)}</span>
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.15rem;">Rule: ${escapeHtml(g.rule_evaluated)}</div>
+              ${g.remediation_required ? `<div style="font-size: 0.72rem; color: var(--accent-amber); margin-top: 0.2rem;">Action: ${escapeHtml(g.remediation_required)}</div>` : ""}
+            </div>
+          `;
+        }).join("");
+      }
+    }
+
+    // Render Tool Invocations
+    if (toolListEl) {
+      if (!data.tool_executions || data.tool_executions.length === 0) {
+        toolListEl.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted);">No tool executions.</div>`;
+      } else {
+        toolListEl.innerHTML = data.tool_executions.map((t, idx) => `
+          <div style="background: var(--bg-surface); padding: 0.5rem 0.75rem; border-radius: 4px; border: 1px solid var(--border-color); font-size: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+              <span style="font-family: var(--font-mono); color: var(--accent-blue); font-weight: 600;">[Tool #${idx + 1}] ${escapeHtml(t.tool_name)}</span>
+              <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">${escapeHtml(t.executed_at || "")}</span>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); background: #0b0f19; padding: 0.35rem; border-radius: 3px; max-height: 80px; overflow-y: auto;">
+              Output: ${escapeHtml(JSON.stringify(t.output))}
+            </div>
+          </div>
+        `).join("");
+      }
+    }
+
+    // Render Proposed Actions
+    if (actionsListEl) {
+      if (!data.actions_proposed || data.actions_proposed.length === 0) {
+        actionsListEl.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted);">No pending actions proposed.</div>`;
+      } else {
+        actionsListEl.innerHTML = data.actions_proposed.map(a => `
+          <div style="background: var(--bg-hover); padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.75rem;">
+            <div style="display: flex; justify-content: space-between; font-weight: 600; color: #ffffff;">
+              <span>${escapeHtml(a.action_type)}: ${escapeHtml(a.sku || a.product_name)}</span>
+              <span style="color: var(--accent-cyan);">₹${(a.total_amount_inr || 0).toLocaleString()}</span>
+            </div>
+            <div style="color: var(--text-secondary); font-size: 0.72rem; margin-top: 0.15rem;">
+              ${escapeHtml(a.reorder_reason || a.mitigation_strategy || "")}
+            </div>
+          </div>
+        `).join("");
+      }
+    }
+
+  } catch (err) {
+    console.error("inspectAgentRun error:", err);
+  }
+}
+
+function initAgentOpsControls() {
+  const btnAutopilot = document.getElementById("btn-trigger-autopilot");
+  const btnShockMit = document.getElementById("btn-trigger-shock-mit");
+  const btnRefresh = document.getElementById("btn-refresh-agents");
+
+  if (btnAutopilot) {
+    btnAutopilot.addEventListener("click", async () => {
+      btnAutopilot.disabled = true;
+      btnAutopilot.textContent = "⏳ Executing Autopilot Loop...";
+      try {
+        const res = await fetch(`${API_BASE}/api/agents/autopilot/run`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ service_level: 0.95, max_budget_inr: 250000.0, require_human_gate: true })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          alert(`✅ Autopilot Completed!\nRun ID: ${json.data.run_id}\nProposed Actions: ${json.data.actions_proposed.length}\nPolicy: ${json.data.guardrail_decision}`);
+          fetchAgentRuns();
+        } else {
+          alert(`❌ Agent execution failed: ${json.message}`);
+        }
+      } catch (err) {
+        alert(`❌ Network error: ${err.message}`);
+      } finally {
+        btnAutopilot.disabled = false;
+        btnAutopilot.textContent = "⚡ Run Replenishment Autopilot";
+      }
+    });
+  }
+
+  if (btnShockMit) {
+    btnShockMit.addEventListener("click", async () => {
+      btnShockMit.disabled = true;
+      btnShockMit.textContent = "⏳ Running Shock Mitigation...";
+      try {
+        const res = await fetch(`${API_BASE}/api/agents/shock-mitigation/run`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ supplier_id: 1, lead_time_inflation_days: 14 })
+        });
+        const json = await res.json();
+        if (json.status === "success") {
+          alert(`✅ Shock Mitigation Complete!\nRun ID: ${json.data.run_id}\nRerouted SKUs: ${json.data.actions_proposed.length}`);
+          fetchAgentRuns();
+        } else {
+          alert(`❌ Shock mitigation failed: ${json.message}`);
+        }
+      } catch (err) {
+        alert(`❌ Network error: ${err.message}`);
+      } finally {
+        btnShockMit.disabled = false;
+        btnShockMit.textContent = "🛡️ Run Shock Mitigator";
+      }
+    });
+  }
+
+  if (btnRefresh) {
+    btnRefresh.addEventListener("click", () => fetchAgentRuns());
+  }
+}
+
+// Expose inspectAgentRun globally for inline onclicks
+window.inspectAgentRun = inspectAgentRun;
 
 // --- Initialization ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -2841,6 +3077,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCapitalControls();
   initObservabilityControls();
   initNetworkControls();
+  initAgentOpsControls();
   initSearchAndFilters();
 
   // Initial Data Fetch

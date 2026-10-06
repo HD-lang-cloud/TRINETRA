@@ -43,6 +43,7 @@
     <button class="nav-item" data-view="supply-network">Supply Network</button>
     <button class="nav-item" data-view="capital">Capital</button>
     <button class="nav-item" data-view="decision-ledger">Decision Ledger</button>
+    <button class="nav-item" data-view="agent-ops">Agent Ops</button>
     <button class="nav-item" data-view="system-health">System Health</button>
   </nav>
 
@@ -1150,6 +1151,130 @@
               <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No trained models yet.</td></tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Governed Agent Operations Console (Agent Ops) -->
+    <section id="view-agent-ops" class="view-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <div style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.08em;">
+            Governed Autonomous Multi-Step Operational Agents
+          </div>
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-top: 0.15rem;">Agent Operations & Audit Traces</h2>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+            Deterministic execution loops • Pre-execution safety guardrails • Complete tool provenance ledger
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <button id="btn-trigger-autopilot" class="btn btn-primary">⚡ Run Replenishment Autopilot</button>
+          <button id="btn-trigger-shock-mit" class="btn btn-secondary">🛡️ Run Shock Mitigator</button>
+          <button id="btn-refresh-agents" class="btn btn-sm">Refresh Runs</button>
+        </div>
+      </div>
+
+      <!-- Agent Metrics Overview -->
+      <div class="pulse-grid" style="margin-bottom: 1.25rem;">
+        <div class="card">
+          <div class="card-title">Total Governed Executions</div>
+          <div id="agent-total-runs" class="card-value">0</div>
+          <div class="card-hint">Historical logged runs</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Policy Pass Rate</div>
+          <div id="agent-guardrail-rate" class="card-value" style="color: var(--accent-emerald);">100%</div>
+          <div class="card-hint">Pre-execution guardrails passed</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Human Escalation Gates</div>
+          <div id="agent-escalation-count" class="card-value" style="color: var(--accent-amber);">0</div>
+          <div class="card-hint">Triggered budget/SPOF override gates</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Circuit Breaker Policy</div>
+          <div id="agent-circuit-policy" class="card-value" style="color: var(--accent-cyan); font-size: 1.1rem;">ACTIVE (MONITORED)</div>
+          <div class="card-hint">Autonomous shutoff on high anomaly density</div>
+        </div>
+      </div>
+
+      <!-- Agent Runs Table & Detailed Inspection Drawer -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: start;">
+        <!-- Runs List -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1rem; margin: 0; font-weight: 600;">Autonomous Agent Run History</h3>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">Click run to inspect tool trace</span>
+          </div>
+          <div class="table-container" style="max-height: 480px; overflow-y: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Run ID</th>
+                  <th>Agent Name</th>
+                  <th>Status</th>
+                  <th>Governance Gate</th>
+                  <th style="text-align: right;">Executed At</th>
+                </tr>
+              </thead>
+              <tbody id="agent-runs-tbody">
+                <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Loading agent run history...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Run Execution Trace Drawer -->
+        <div class="card" id="agent-trace-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+              <h3 id="agent-inspect-title" style="font-size: 1rem; margin: 0; font-weight: 600;">Run Execution Trace</h3>
+              <div id="agent-inspect-id" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan);">Select a run from the ledger</div>
+            </div>
+            <span id="agent-inspect-verdict" class="badge badge-normal">STATUS: --</span>
+          </div>
+
+          <div id="agent-trace-placeholder" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">
+            Select any agent execution from the history list to view deterministic reasoning, evaluated safety policies, and raw tool-invocation traces.
+          </div>
+
+          <div id="agent-trace-content" style="display: none;">
+            <!-- Goal & Rationale -->
+            <div style="background: var(--bg-surface); padding: 0.75rem; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+              <div style="font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase;">Agent Objective & Rationale</div>
+              <div id="agent-inspect-rationale" style="font-size: 0.85rem; color: #ffffff; margin-top: 0.25rem; line-height: 1.4;">--</div>
+            </div>
+
+            <!-- Guardrail Evaluations -->
+            <div style="margin-bottom: 1rem;">
+              <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.4rem; letter-spacing: 0.05em;">
+                🛡️ Evaluated Safety Guardrails
+              </div>
+              <div id="agent-guardrail-list" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Tool Invocation Traces -->
+            <div style="margin-bottom: 1rem;">
+              <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.4rem; letter-spacing: 0.05em;">
+                🔧 Tool Invocations & Provenance
+              </div>
+              <div id="agent-tool-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 220px; overflow-y: auto;">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Actions Proposed -->
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.4rem; letter-spacing: 0.05em;">
+                📋 Proposed Interventions & Orders
+              </div>
+              <div id="agent-actions-list" style="display: flex; flex-direction: column; gap: 0.4rem; max-height: 180px; overflow-y: auto;">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

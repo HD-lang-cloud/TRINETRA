@@ -25,6 +25,7 @@ from routes.simulation import simulation_bp
 from routes.decisions import decisions_bp
 from routes.network import network_bp
 from routes.capital import capital_bp
+from routes.agents import agents_bp
 
 
 def create_app(config_name: str = None) -> Flask:
@@ -56,6 +57,7 @@ def create_app(config_name: str = None) -> Flask:
     app.register_blueprint(decisions_bp)
     app.register_blueprint(network_bp)
     app.register_blueprint(capital_bp)
+    app.register_blueprint(agents_bp)
 
     # Workstation Web App Landing
     @app.route("/", methods=["GET"])
