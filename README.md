@@ -1,12 +1,12 @@
 # TRINETRA (त्रिनेत्र)
 > **SEE. FORESEE. PREPARE.**  
-> *Autonomous, Audit-Grade, Self-Healing Inventory Resilience & Decision Intelligence Operating System*
+> *Autonomous, Governed, Audit-Grade Inventory Resilience & Decision Intelligence Operating System*
 
-[![Tests: 62/62 Passed](https://img.shields.io/badge/Tests-62%2F62%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](https://github.com)
-[![Python: 3.10+](https://img.shields.io/badge/Python-3.10%20%7C%203.13-38bdf8?style=for-the-badge&logo=python&logoColor=white)](https://github.com)
-[![Architecture: 10-Phased Clean OS](https://img.shields.io/badge/Architecture-10--Phased%20Resilience%20OS-f59e0b?style=for-the-badge)](https://github.com)
-[![UI: Control Room / Bloomberg Terminal](https://img.shields.io/badge/UI-Operations%20Control%20Room-6366f1?style=for-the-badge)](https://github.com)
-[![License: Enterprise](https://img.shields.io/badge/License-Proprietary%20%2F%20Enterprise-94a3b8?style=for-the-badge)](https://github.com)
+[![Tests: 66/66 Passed](https://img.shields.io/badge/Tests-66%2F66%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](https://github.com/HD-lang-cloud/TRINETRA)
+[![Python: 3.10+](https://img.shields.io/badge/Python-3.10%20%7C%203.13-38bdf8?style=for-the-badge&logo=python&logoColor=white)](https://github.com/HD-lang-cloud/TRINETRA)
+[![Architecture: Governed Agentic OS](https://img.shields.io/badge/Architecture-Governed%20Agentic%20OS-f59e0b?style=for-the-badge)](https://github.com/HD-lang-cloud/TRINETRA)
+[![Deployment: Ready](https://img.shields.io/badge/Deploy-Render%20%7C%20Railway%20%7C%20Docker-a855f7?style=for-the-badge)](https://github.com/HD-lang-cloud/TRINETRA)
+[![UI: Control Room / Bloomberg Terminal](https://img.shields.io/badge/UI-Operations%20Control%20Room-6366f1?style=for-the-badge)](https://github.com/HD-lang-cloud/TRINETRA)
 
 ---
 
@@ -132,15 +132,32 @@
 
 ---
 
+## 🚀 Cloud Deployment Guide
+
+TRINETRA is production-configured for **Render**, **Railway**, **Heroku**, or any Linux Docker container via its included [`wsgi.py`](file:///c:/Users/himan/OneDrive/Desktop/TRINETRA/wsgi.py), [`Procfile`](file:///c:/Users/himan/OneDrive/Desktop/TRINETRA/Procfile), and [`render.yaml`](file:///c:/Users/himan/OneDrive/Desktop/TRINETRA/render.yaml).
+
+### Deploy on Render (Recommended, Free Tier):
+1. Push your changes to GitHub repository: `https://github.com/HD-lang-cloud/TRINETRA`.
+2. Go to **[Render.com](https://render.com)** and click **New +** $\rightarrow$ **Web Service**.
+3. Connect your GitHub repository `HD-lang-cloud/TRINETRA`.
+4. Render automatically detects the Python stack:
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn wsgi:app --workers 2 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT`
+   - **Python Version**: `3.11.9`
+5. Click **Deploy Web Service** — in 2 minutes, your live production URL (e.g. `https://trinetra-xxxx.onrender.com`) is live!
+*(On startup, TRINETRA automatically checks and seeds the production database with full personas, suppliers, and historical demand if not already present).*
+
+---
+
 ## 🧪 Running Automated Tests
 
-Run the full automated test suite (62 tests covering all 10 phases):
+Run the full automated test suite:
 
 ```bash
 pytest tests/ -v
 ```
 
-All 62 tests across Foundation, Core Inventory, Intelligence, Forecasting, Replenishment, Simulation, Decisions, Supply Network, Capital Optimization, and System Observability will execute in green.
+All 66 tests across Foundation, Core Inventory, Intelligence, Forecasting, Replenishment, Simulation, Decisions, Supply Network, Capital Optimization, System Observability, and Governed Agent Operations will execute in green.
 
 ---
 
@@ -154,6 +171,10 @@ All 62 tests across Foundation, Core Inventory, Intelligence, Forecasting, Reple
 | `/api/system/drift` | `GET` | Statistical demand drift analysis across demand horizons |
 | `/api/system/reconcile` | `POST` | Autonomous self-healing audit and repair trigger |
 | `/api/system/circuit-breaker` | `GET` | Circuit breaker status (`CLOSED_NORMAL` vs `TRIPPED_SAFE_MODE`) |
+| `/api/agents/autopilot/run` | `POST` | Governed multi-step Replenishment Autopilot with safety guardrails |
+| `/api/agents/shock-mitigation/run` | `POST` | Resilience shock mitigator with vendor failover routing |
+| `/api/agents/runs` | `GET` | List recent autonomous agent runs and governance gates |
+| `/api/agents/runs/<run_id>` | `GET` | Granular agent trace: tool execution log, policy verdicts, proposed POs |
 | `/api/products` | `GET`, `POST` | Catalogue items CRUD and inventory filtering |
 | `/api/inventory/movements` | `GET`, `POST` | Immutable stock movement ledger |
 | `/api/suppliers` | `GET`, `POST` | Multi-tier vendor directory and reliability scoring |
