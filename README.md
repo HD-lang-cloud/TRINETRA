@@ -5,8 +5,10 @@
 [![Tests: 66/66 Passed](https://img.shields.io/badge/Tests-66%2F66%20Passing-10b981?style=for-the-badge&logo=pytest&logoColor=white)](https://github.com/HD-lang-cloud/TRINETRA)
 [![Python: 3.10+](https://img.shields.io/badge/Python-3.10%20%7C%203.13-38bdf8?style=for-the-badge&logo=python&logoColor=white)](https://github.com/HD-lang-cloud/TRINETRA)
 [![Architecture: Governed Agentic OS](https://img.shields.io/badge/Architecture-Governed%20Agentic%20OS-f59e0b?style=for-the-badge)](https://github.com/HD-lang-cloud/TRINETRA)
-[![Deployment: Ready](https://img.shields.io/badge/Deploy-Render%20%7C%20Railway%20%7C%20Docker-a855f7?style=for-the-badge)](https://github.com/HD-lang-cloud/TRINETRA)
+[![🌐 Live Demo](https://img.shields.io/badge/🌐%20Live%20Demo-trinetra--t5ol.onrender.com-00c853?style=for-the-badge&logo=render&logoColor=white)](https://trinetra-t5ol.onrender.com)
 [![UI: Control Room / Bloomberg Terminal](https://img.shields.io/badge/UI-Operations%20Control%20Room-6366f1?style=for-the-badge)](https://github.com/HD-lang-cloud/TRINETRA)
+
+> ### 🌐 **[Live Demo → https://trinetra-t5ol.onrender.com](https://trinetra-t5ol.onrender.com)**
 
 ---
 
